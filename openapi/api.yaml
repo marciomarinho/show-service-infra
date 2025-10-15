@@ -1,0 +1,71 @@
+openapi: 3.0.3
+info:
+  title: Show Service API
+  version: 1.0.0
+
+servers:
+  - url: https://REPLACE_WITH_API_GATEWAY_URL
+
+paths:
+  /oauth/token:
+    post:
+      summary: Get OAuth2 token (Cognito passthrough)
+      description: Proxies to Cognito /oauth2/token. Provide Basic auth and grant_type=client_credentials.
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                grant_type:
+                  type: string
+                  example: client_credentials
+      responses:
+        "200":
+          description: Token
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /shows:
+    get:
+      summary: List shows
+      security:
+        - cognitoJwt: []
+      responses:
+        "200":
+          description: OK
+    post:
+      summary: Create shows (bulk)
+      security:
+        - cognitoJwt: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                payload:
+                  type: array
+                  items:
+                    type: object
+                    required: [slug, title]
+                    properties:
+                      slug: { type: string }
+                      title: { type: string }
+                      image:
+                        type: object
+                        properties:
+                          showImage: { type: string }
+      responses:
+        "201":
+          description: Created
+
+components:
+  securitySchemes:
+    cognitoJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
