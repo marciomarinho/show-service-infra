@@ -9,10 +9,18 @@ resource "aws_apigatewayv2_authorizer" "jwt" {
   authorizer_type  = "JWT"
   identity_sources = ["$request.header.Authorization"]
   name             = "${local.name}-jwt"
+
   jwt_configuration {
+    # Use the User Pool issuer (not Hosted UI domain)
+    issuer   = "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.pool.id}"
     audience = [aws_cognito_user_pool_client.app_client.id]
-    issuer   = "https://${aws_cognito_user_pool_domain.domain.domain}.auth.${var.region}.amazoncognito.com"
   }
+
+  depends_on = [
+    aws_cognito_user_pool.pool,
+    aws_cognito_user_pool_client.app_client,
+    aws_cognito_user_pool_domain.domain
+  ]
 }
 
 # Integration to ALB for /shows
@@ -20,6 +28,7 @@ resource "aws_apigatewayv2_integration" "alb_integ" {
   api_id                 = aws_apigatewayv2_api.http_api.id
   integration_type       = "HTTP_PROXY"
   integration_uri        = "http://${aws_lb.app_alb.dns_name}"
+  integration_method     = "ANY"
   payload_format_version = "1.0"
 }
 
@@ -31,10 +40,10 @@ resource "aws_apigatewayv2_route" "get_shows" {
   authorizer_id      = aws_apigatewayv2_authorizer.jwt.id
 }
 
-resource "aws_apigatewayv2_route" "post_shows" {
-  api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "POST /shows"
-  target             = "integrations/${aws_apigatewayv2_integration.alb_integ.id}"
+resource "aws_apigatewayv2_route" "catch_all" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "ANY /{proxy+}"
+  target    = "integrations/${aws_apigatewayv2_integration.alb_integ.id}"
   authorization_type = "JWT"
   authorizer_id      = aws_apigatewayv2_authorizer.jwt.id
 }

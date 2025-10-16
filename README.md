@@ -61,6 +61,43 @@ The ECS task receives these environment variables:
 - `APP_ENV` - Current environment (dev/test/prod)
 - `GIN_MODE` - Gin mode (debug for dev/test, release for prod)
 - `APP__DYNAMODB__SHOWSTABLE` - Environment-specific table name
+- `APP__DYNAMODB__SHOWSGSI` - GSI name for querying DRM-enabled shows with episodes
+
+## CI/CD Pipeline
+
+### CodeBuild Project
+
+A CodeBuild project is configured to automatically build and deploy the Go application:
+
+**Project Name**: `${project}-${env}-build` (e.g., `show-service-dev-build`)
+
+**Trigger**: Manual or webhook from GitHub repository
+
+**Build Process**:
+1. **Pre-build**: Login to Amazon ECR
+2. **Build**: 
+   - Build Go application
+   - Create Docker image
+   - Tag and push to ECR with `latest` tag
+3. **Post-build**: 
+   - Update ECS service to deploy new image
+   - Force new deployment
+
+### Manual Deployment
+
+To trigger a build manually:
+
+```bash
+aws codebuild start-build --project-name $(terraform output -raw codebuild_project_name)
+```
+
+### Build Specification
+
+The `buildspec.yml` file defines the build process:
+- Uses `aws/codebuild/standard:7.0` Docker image
+- Builds Go application with `go build`
+- Creates Docker image and pushes to ECR
+- Updates ECS service for deployment
 
 ## Notes
 
@@ -68,3 +105,5 @@ The ECS task receives these environment variables:
 - Cognito domains are auto-generated with environment prefixes
 - Log groups are environment-specific: `/ecs/show-service-{env}`
 - All resources are tagged with `Environment`, `Project`, and `ManagedBy` tags
+- Custom resource server scopes are used for fine-grained API access control
+- **DynamoDB GSI**: `gsi_drm_episode` enables querying shows by DRM status and episode count

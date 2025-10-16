@@ -102,6 +102,130 @@ resource "aws_iam_role" "task_role" {
   assume_role_policy = data.aws_iam_policy_document.task_exec_assume.json
 }
 
+# IAM role for CodeBuild
+data "aws_iam_policy_document" "codebuild_assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["codebuild.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "codebuild_role" {
+  name               = "${local.resource_prefix}-codebuild"
+  assume_role_policy = data.aws_iam_policy_document.codebuild_assume.json
+
+  tags = local.common_tags
+}
+
+data "aws_iam_policy_document" "codebuild_policy" {
+  statement {
+    actions = [
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload",
+      "ecr:PutImage"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "ecs:UpdateService",
+      "ecs:DescribeServices",
+      "ecs:DescribeTasks",
+      "ecs:DescribeTaskDefinition",
+      "ecs:RegisterTaskDefinition"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "iam:PassRole"
+    ]
+    resources = [aws_iam_role.task_execution_role.arn]
+  }
+}
+
+resource "aws_iam_role_policy" "codebuild_policy" {
+  role   = aws_iam_role.codebuild_role.name
+  policy = data.aws_iam_policy_document.codebuild_policy.json
+}
+
+# CodeBuild project for Go application
+resource "aws_codebuild_project" "app_build" {
+  name          = "${local.resource_prefix}-build"
+  description   = "Build and deploy Go application to ECS"
+  service_role  = aws_iam_role.codebuild_role.arn
+
+  artifacts {
+    type = "NO_ARTIFACTS"
+  }
+
+  environment {
+    compute_type                = "BUILD_GENERAL1_SMALL"
+    image                       = "aws/codebuild/standard:7.0"
+    type                        = "LINUX_CONTAINER"
+    privileged_mode            = true
+
+    environment_variable {
+      name  = "AWS_DEFAULT_REGION"
+      value = var.region
+    }
+
+    environment_variable {
+      name  = "AWS_ACCOUNT_ID"
+      value = data.aws_caller_identity.current.account_id
+    }
+
+    environment_variable {
+      name  = "IMAGE_REPO_NAME"
+      value = var.ecr_repo_name
+    }
+
+    environment_variable {
+      name  = "ECS_CLUSTER_NAME"
+      value = aws_ecs_cluster.this.name
+    }
+
+    environment_variable {
+      name  = "ECS_SERVICE_NAME"
+      value = aws_ecs_service.svc.name
+    }
+
+    environment_variable {
+      name  = "ECS_TASK_DEFINITION"
+      value = aws_ecs_task_definition.task.family
+    }
+  }
+
+  source {
+    type      = "GITHUB"
+    location  = "https://github.com/marciomarinho/show-service.git"
+    buildspec = "buildspec.yml"
+  }
+
+  tags = local.common_tags
+}
+
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "ddb_access" {
   statement {
     actions = [
@@ -139,7 +263,7 @@ resource "aws_ecs_task_definition" "task" {
   container_definitions = jsonencode([
     {
       name      = "app"
-      image     = "${aws_ecr_repository.repo.repository_url}:${var.image_tag}"
+      image     = "${aws_ecr_repository.repo.repository_url}:latest"
       essential = true
       portMappings = [
         { containerPort = var.container_port, hostPort = var.container_port, protocol = "tcp" }
@@ -149,6 +273,7 @@ resource "aws_ecs_task_definition" "task" {
         { name = "APP__DYNAMODB__REGION", value = var.region },
         { name = "APP__DYNAMODB__ENDPOINTOVERRIDE", value = "" },
         { name = "APP__DYNAMODB__SHOWSTABLE", value = aws_dynamodb_table.shows.name },
+        { name = "APP__DYNAMODB__SHOWSGSI", value = "gsi_drm_episode" },
         { name = "GIN_MODE", value = var.env == "prod" ? "release" : "debug" }
       ]
       logConfiguration = {

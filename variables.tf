@@ -110,8 +110,23 @@ variable "log_retention_days_override" {
   description = "Override log retention days (uses env default if null)"
 }
 
+variable "log_retention_days" {
+  type        = number
+  default     = 7
+  description = "Log retention days for CloudWatch log groups"
+}
+
 variable "cognito_domain_prefix" {
   type        = string
   default     = ""
   description = "Cognito domain prefix (auto-generated if empty)"
+}
+
+# Computed values that use environment configs
+locals {
+  final_desired_count   = var.desired_count_override != null ? var.desired_count_override : local.current_env_config.desired_count
+  final_cpu            = var.cpu_override != null ? var.cpu_override : local.current_env_config.cpu
+  final_memory         = var.memory_override != null ? var.memory_override : local.current_env_config.memory
+  final_log_retention  = var.log_retention_days_override != null ? var.log_retention_days_override : local.current_env_config.log_retention_days
+  final_cognito_prefix = var.cognito_domain_prefix != "" ? var.cognito_domain_prefix : local.current_env_config.cognito_domain_prefix
 }

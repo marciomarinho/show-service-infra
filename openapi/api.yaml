@@ -69,3 +69,4 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+      # Note: Uses Cognito User Pool issuer (https://cognito-idp.region.amazonaws.com/poolId) with custom resource server scopes

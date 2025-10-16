@@ -20,5 +20,9 @@ output "cognito_client_secret" {
 }
 
 output "cognito_token_endpoint" {
-  value = "https://${aws_cognito_user_pool_domain.domain.domain}.auth.${var.region}.amazoncognito.com/oauth2/token"
+  value = "https://cognito-idp.${var.region}.amazonaws.com"
+}
+
+output "codebuild_project_name" {
+  value = aws_codebuild_project.app_build.name
 }
