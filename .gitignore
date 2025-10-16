@@ -1,18 +1,35 @@
 # Terraform state files
-*.tfstate
-*.tfstate.*
-crash.log
+# *.tfstate
+# *.tfstate.*
+# crash.log
 
 # Local Terraform configuration
-.terraform/
-.terraformrc
-terraform.rc
+# .terraform/
+# .terraformrc
+# terraform.rc
 
 # Variable definition files (potentially containing sensitive data)
-*.tfvars
-*.tfvars.json
+# *.tfvars
+# *.tfvars.json
 
 # Terraform generated files
 # .terraform.lock.hcl # Generally, this should be committed, but some workflows might exclude it.
 # Check your team's policy on this file.
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# IDE/editor
+.vscode/
+.idea/
+.DS_Store
