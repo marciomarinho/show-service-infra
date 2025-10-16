@@ -12,12 +12,14 @@ resource "aws_apigatewayv2_authorizer" "jwt" {
 
   jwt_configuration {
     # Use the User Pool issuer (not Hosted UI domain)
-    issuer   = "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.pool.id}"
-    audience = [aws_cognito_user_pool_client.app_client.id]
+    issuer   = "https://cognito-idp.${var.region}.amazonaws.com/${data.aws_cognito_user_pool.existing.id}"
+    audience = [data.aws_cognito_user_pool_client.existing_client.id]
   }
 
   depends_on = [
-    aws_cognito_user_pool.pool,
+    data.aws_cognito_user_pool.existing,
+    data.aws_cognito_user_pool_client.existing_client,
+    aws_cognito_resource_server.shows_api,
     aws_cognito_user_pool_client.app_client,
     aws_cognito_user_pool_domain.domain
   ]
@@ -53,7 +55,7 @@ resource "aws_apigatewayv2_integration" "cognito_token_integ" {
   api_id                 = aws_apigatewayv2_api.http_api.id
   integration_type       = "HTTP_PROXY"
   integration_method     = "POST"
-  integration_uri        = "https://${aws_cognito_user_pool_domain.domain.domain}.auth.${var.region}.amazoncognito.com/oauth2/token"
+  integration_uri        = "https://show-service-dev-f87c.auth.ap-southeast-2.amazoncognito.com/oauth2/token"
   payload_format_version = "1.0"
 }
 

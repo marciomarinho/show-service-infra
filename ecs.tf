@@ -233,10 +233,16 @@ data "aws_iam_policy_document" "ddb_access" {
       "dynamodb:GetItem",
       "dynamodb:PutItem",
       "dynamodb:UpdateItem",
+      "dynamodb:DeleteItem",
       "dynamodb:Query",
-      "dynamodb:Scan"
+      "dynamodb:Scan",
+      "dynamodb:BatchGetItem",
+      "dynamodb:BatchWriteItem"
     ]
-    resources = [aws_dynamodb_table.shows.arn]
+    resources = [
+      aws_dynamodb_table.shows.arn,
+      "${aws_dynamodb_table.shows.arn}/index/*"
+    ]
   }
 }
 
@@ -270,9 +276,9 @@ resource "aws_ecs_task_definition" "task" {
       ]
       environment = [
         { name = "APP_ENV", value = var.env },
+        { name = "APP_DYNAMODB_SHOWSTABLE", value = "shows-${var.env}" },
         { name = "APP__DYNAMODB__REGION", value = var.region },
         { name = "APP__DYNAMODB__ENDPOINTOVERRIDE", value = "" },
-        { name = "APP__DYNAMODB__SHOWSTABLE", value = aws_dynamodb_table.shows.name },
         { name = "APP__DYNAMODB__SHOWSGSI", value = "gsi_drm_episode" },
         { name = "GIN_MODE", value = var.env == "prod" ? "release" : "debug" }
       ]
