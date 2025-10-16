@@ -22,9 +22,10 @@ resource "aws_ecs_cluster" "this" {
 # ALB + target group + listener
 resource "aws_lb" "app_alb" {
   name               = "${local.name}-alb"
+  internal           = true  # Make ALB internal, not internet-facing
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [aws_subnet.public_a.id, aws_subnet.public_b.id]
+  subnets            = [aws_subnet.private_a.id, aws_subnet.private_b.id]
 }
 
 resource "aws_lb_target_group" "tg" {
