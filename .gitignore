@@ -32,4 +32,4 @@ terraform.rc
 # IDE/editor
 .vscode/
 .idea/
-.DS_Store
+.DS_Store/.terraform/
