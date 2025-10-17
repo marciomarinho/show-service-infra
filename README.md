@@ -55,21 +55,7 @@ A complete AWS serverless architecture for a show/content management service wit
 
 ### Sequence Diagram: Authenticated API Request
 
-```
-User                 API Gateway              ALB/ECS              DynamoDB
-  │                       │                       │                       │
-  │  GET /shows           │                       │                       │
-  │  (Bearer Token)       │                       │                       │
-  ├──────────────────────►│                       │                       │
-  │                       │  Validate JWT         │                       │
-  │                       │  (Cognito Authorizer) │                       │
-  │                       ├──────────────────────►│                       │
-  │                       │                       │  Query shows-dev      │
-  │                       │                       │  table                │
-  │                       │◀──────────────────────┤                       │
-  │◀──────────────────────┤                       │                       │
-  │    Response JSON      │                       │                       │
-```
+<img src="./post_show_and_get_show.png" alt="Authenticated API Request">
 
 ## 📋 API Usage Examples
 
