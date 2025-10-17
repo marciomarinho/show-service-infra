@@ -246,12 +246,16 @@ aws elbv2 describe-target-health --target-group-arn $(aws elbv2 describe-target-
 aws logs describe-log-groups --log-group-name-prefix "/aws/apigateway"
 ```
 
-## 🚨 Screenshots
+## 📷 Sample Screenshots
 
 ### CodeBuild
 
 <img src="./screenshots/code_build.png" alt="CodeBuild">
 
+### API Gateway
+
+<img src="./screenshots/api_gateway1.png" alt="APIGateway">
+<img src="./screenshots/api_gateway2.png" alt="APIGateway">
 
 ## 📚 Additional Resources
 
