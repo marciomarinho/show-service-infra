@@ -46,6 +46,6 @@ resource "aws_cognito_user_pool_client" "app_client" {
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
-  domain       = "show-service-dev-f87c"  # Use the known existing domain
+  domain       = var.cognito_domain_prefix != "" ? var.cognito_domain_prefix : "${local.resource_prefix}-${random_id.suffix.hex}"
   user_pool_id = aws_cognito_user_pool.pool.id
 }
