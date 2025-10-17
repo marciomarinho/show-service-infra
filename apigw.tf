@@ -30,6 +30,8 @@ resource "aws_apigatewayv2_integration" "alb_integ" {
   integration_uri        = "http://${aws_lb.app_alb.dns_name}"
   integration_method     = "ANY"
   payload_format_version = "1.0"
+
+  depends_on = [aws_vpc_endpoint.apigateway]
 }
 
 resource "aws_apigatewayv2_route" "get_shows" {

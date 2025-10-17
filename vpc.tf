@@ -98,14 +98,54 @@ resource "aws_route_table_association" "private_b" {
 
 resource "aws_security_group" "alb_sg" {
   name        = "${local.name}-alb-sg"
-  description = "ALB SG - Internal access only"
+  description = "ALB SG - Allow API Gateway VPC endpoints and VPC traffic"
   vpc_id      = aws_vpc.main.id
 
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main.cidr_block]  # Only allow from VPC (API Gateway VPC endpoints)
+    cidr_blocks = [
+      aws_vpc.main.cidr_block,  # VPC traffic
+      "52.63.0.0/16",          # API Gateway VPC endpoints (ap-southeast-2)
+      "52.62.0.0/16",          # API Gateway VPC endpoints (ap-southeast-2)
+    ]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = local.common_tags
+}
+
+# VPC Endpoints for API Gateway to access private ALB
+resource "aws_vpc_endpoint" "apigateway" {
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${var.region}.execute-api"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = [aws_subnet.private_a.id, aws_subnet.private_b.id]
+  security_group_ids  = [aws_security_group.vpc_endpoint_sg.id]
+  private_dns_enabled = true
+
+  tags = merge(local.common_tags, {
+    Name = "${local.name}-apigateway-endpoint"
+  })
+}
+
+resource "aws_security_group" "vpc_endpoint_sg" {
+  name        = "${local.name}-vpc-endpoint-sg"
+  description = "Security group for VPC endpoints"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = [aws_vpc.main.cidr_block]
   }
 
   egress {
