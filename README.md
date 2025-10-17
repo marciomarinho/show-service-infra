@@ -248,6 +248,10 @@ aws logs describe-log-groups --log-group-name-prefix "/aws/apigateway"
 
 ## 📷 Sample Screenshots
 
+### Cognito
+
+<img src="./screenshots/cognito.png" alt="Cognito">
+
 ### CodeBuild
 
 <img src="./screenshots/code_build.png" alt="CodeBuild">
@@ -256,6 +260,36 @@ aws logs describe-log-groups --log-group-name-prefix "/aws/apigateway"
 
 <img src="./screenshots/api_gateway1.png" alt="APIGateway">
 <img src="./screenshots/api_gateway2.png" alt="APIGateway">
+<img src="./screenshots/api_gateway3.png" alt="APIGateway">
+
+### VPC Endpoint (Connecting API Gateway to ALB)
+
+<img src="./screenshots/vpc_endpoint.png" alt="VPC Endpoint">
+
+### ALB
+
+<img src="./screenshots/alb.png" alt="ALB">
+
+### Target Group
+
+<img src="./screenshots/target_group.png" alt="Target Group">
+
+### ECS Cluster
+
+<img src="./screenshots/ecs_cluster.png" alt="ECS Cluster">
+
+### ECS Service
+
+<img src="./screenshots/ecs_service.png" alt="ECS Service">
+
+### ECS Task
+
+<img src="./screenshots/ecs_task1.png" alt="ECS Task">
+<img src="./screenshots/ecs_task2.png" alt="ECS Task">
+
+### DynamoDB
+
+<img src="./screenshots/dynamodb.png" alt="DynamoDB">
 
 ## 📚 Additional Resources
 
