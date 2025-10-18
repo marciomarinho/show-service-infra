@@ -2,7 +2,7 @@
 
 A complete AWS serverless architecture for a show/content management service with authentication, API gateway, containerized application, and NoSQL database.
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 <img src="./architecture.png" alt="Architecture">
 
@@ -16,7 +16,7 @@ A complete AWS serverless architecture for a show/content management service wit
 - **ECR** → Stores Docker images for the application
 - **CodeBuild** → CI/CD pipeline for automated deployments
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -47,7 +47,7 @@ A complete AWS serverless architecture for a show/content management service wit
    echo "ALB: $(terraform output -raw alb_url)"
    ```
 
-## 🔐 Authentication Flow
+## Authentication Flow
 
 ### Sequence Diagram: Get Bearer Token
 
@@ -57,7 +57,7 @@ A complete AWS serverless architecture for a show/content management service wit
 
 <img src="./post_show_and_get_show.png" alt="Authenticated API Request">
 
-## 📋 API Usage Examples
+## API Usage Examples
 
 ### Get Bearer Token
 
@@ -79,7 +79,7 @@ curl -H "Authorization: Bearer $TOKEN" "https://your-apigw-url/shows"
 # Expected: {"response": []} (empty array initially)
 ```
 
-## 🛠️ Development Setup
+## Development Setup
 
 ### Local Development
 
@@ -110,7 +110,7 @@ curl http://localhost:8080/health
 curl http://localhost:8080/shows
 ```
 
-## 🔧 Infrastructure Components
+## Infrastructure Components
 
 ### API Gateway (HTTP API)
 - **Routes**: `GET /shows`, `POST /oauth/token`
@@ -145,7 +145,7 @@ curl http://localhost:8080/shows
 - **Trigger**: GitHub webhooks or manual
 - **Process**: Build → Docker → ECR → ECS deploy
 
-## 🌍 Multi-Environment Deployment
+## Multi-Environment Deployment
 
 | Environment | CPU | Memory | Tasks | Log Retention |
 |-------------|-----|--------|-------|---------------|
@@ -166,7 +166,7 @@ terraform apply -var-file=terraform.test.tfvars -auto-approve
 terraform apply -var-file=terraform.prod.tfvars -auto-approve
 ```
 
-## 🔒 Security Features
+## Security Features
 
 - **Private ALB**: Not accessible from public internet
 - **VPC Isolation**: All components in private subnets
@@ -175,14 +175,14 @@ terraform apply -var-file=terraform.prod.tfvars -auto-approve
 - **Encrypted State**: Terraform state encrypted (when using S3 backend)
 - **IAM Roles**: Least privilege access for all services
 
-## 📊 Monitoring and Logging
+## Monitoring and Logging
 
 - **CloudWatch Logs**: `/ecs/show-service-{env}` log groups
 - **Application Logs**: Structured JSON logging
 - **Health Checks**: `/health` endpoint for ALB
 - **Error Tracking**: Detailed error responses with proper HTTP codes
 
-## 🔄 CI/CD Pipeline
+## CI/CD Pipeline
 
 ### CodeBuild Process
 
@@ -200,7 +200,7 @@ aws codebuild start-build --project-name $(terraform output -raw codebuild_proje
 aws codebuild batch-get-builds --ids $(aws codebuild list-builds --project-name show-service-dev-build --query 'ids[0]' --output text)
 ```
 
-## 🗃️ Data Model
+## Data Model
 
 ### DynamoDB Table: `shows-{env}`
 
@@ -217,7 +217,7 @@ aws codebuild batch-get-builds --ids $(aws codebuild list-builds --project-name 
 - **Range Key**: `episodeCount`
 - **Projection**: All attributes
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -246,7 +246,7 @@ aws elbv2 describe-target-health --target-group-arn $(aws elbv2 describe-target-
 aws logs describe-log-groups --log-group-name-prefix "/aws/apigateway"
 ```
 
-## 📷 Sample Screenshots
+## Sample Screenshots
 
 ### Cognito
 
@@ -291,7 +291,7 @@ aws logs describe-log-groups --log-group-name-prefix "/aws/apigateway"
 
 <img src="./screenshots/dynamodb.png" alt="DynamoDB">
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [AWS API Gateway Documentation](https://docs.aws.amazon.com/apigateway/)
 - [AWS Cognito Documentation](https://docs.aws.amazon.com/cognito/)
