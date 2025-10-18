@@ -51,11 +51,11 @@ A complete AWS serverless architecture for a show/content management service wit
 
 ### Sequence Diagram: Get Bearer Token
 
-<img src="./get_bearer_token.png" alt="Authentication Flow">
+<img src="./screenshots/get_bearer_token.png" alt="Authentication Flow - get bearer tokien">
 
 ### Sequence Diagram: Authenticated API Request
 
-<img src="./post_show_and_get_show.png" alt="Authenticated API Request">
+<img src="./screenshots/post_show_and_get_show.png" alt="Authenticated API Request">
 
 ## API Usage Examples
 
