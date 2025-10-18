@@ -304,7 +304,8 @@ aws logs describe-log-groups --log-group-name-prefix "/aws/apigateway"
 
 ### Other things that could be done
 
-- Build a multi-stage CI/CD pipeline 
+- Build a multi-stage and multi-branch CI/CD pipeline with automatic 
+  build and deployment for each push to the repository. 
 - Add more features to the application
 - The application could also be designed and deployed as AWS Lambdas
 
