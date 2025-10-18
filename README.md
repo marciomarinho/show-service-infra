@@ -300,4 +300,12 @@ aws logs describe-log-groups --log-group-name-prefix "/aws/apigateway"
 
 ---
 
+## Extras
+
+### Other things that could be done
+
+- Build a multi-stage CI/CD pipeline 
+- Add more features to the application
+- The application could also be designed and deployed as AWS Lambdas
+
 **Architecture**: Serverless microservice with JWT authentication, private networking, and automated deployments.
