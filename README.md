@@ -308,5 +308,6 @@ aws logs describe-log-groups --log-group-name-prefix "/aws/apigateway"
   build and deployment for each push to the repository. 
 - Add more features to the application
 - The application could also be designed and deployed as AWS Lambdas
-
+- The application packaging and deployment to ECR is done using :latest tag, which is not ideal. 
+  A better approach would be to use a version tag with the git hash, such as :1.0.0-abc123.
 **Architecture**: Serverless microservice with JWT authentication, private networking, and automated deployments.
