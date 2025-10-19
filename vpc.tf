@@ -122,7 +122,6 @@ resource "aws_security_group" "alb_sg" {
   tags = local.common_tags
 }
 
-# VPC Endpoints for API Gateway to access private ALB
 resource "aws_vpc_endpoint" "apigateway" {
   vpc_id              = aws_vpc.main.id
   service_name        = "com.amazonaws.${var.region}.execute-api"

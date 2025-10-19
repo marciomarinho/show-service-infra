@@ -1,4 +1,3 @@
-# ECR repository
 resource "aws_ecr_repository" "repo" {
   name                 = var.ecr_repo_name
   image_tag_mutability = "MUTABLE"
@@ -6,7 +5,6 @@ resource "aws_ecr_repository" "repo" {
   tags = { Name = "${local.name}-ecr" }
 }
 
-# Logs
 resource "aws_cloudwatch_log_group" "app" {
   name              = "/ecs/${local.resource_prefix}"
   retention_in_days = local.final_log_retention
@@ -14,15 +12,13 @@ resource "aws_cloudwatch_log_group" "app" {
   tags = local.common_tags
 }
 
-# ECS
 resource "aws_ecs_cluster" "this" {
   name = "${local.name}-cluster"
 }
 
-# ALB + target group + listener
 resource "aws_lb" "app_alb" {
   name               = "${local.name}-alb"
-  internal           = true  # Make ALB internal, not internet-facing
+  internal           = true 
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
   subnets            = [aws_subnet.private_a.id, aws_subnet.private_b.id]
@@ -54,7 +50,6 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-# Service SG
 resource "aws_security_group" "service_sg" {
   name        = "${local.resource_prefix}-service-sg"
   description = "ECS service SG"
@@ -77,7 +72,6 @@ resource "aws_security_group" "service_sg" {
   tags = local.common_tags
 }
 
-# IAM roles
 data "aws_iam_policy_document" "task_exec_assume" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -103,7 +97,6 @@ resource "aws_iam_role" "task_role" {
   assume_role_policy = data.aws_iam_policy_document.task_exec_assume.json
 }
 
-# IAM role for CodeBuild
 data "aws_iam_policy_document" "codebuild_assume" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -169,7 +162,6 @@ resource "aws_iam_role_policy" "codebuild_policy" {
   policy = data.aws_iam_policy_document.codebuild_policy.json
 }
 
-# CodeBuild project for Go application
 resource "aws_codebuild_project" "app_build" {
   name          = "${local.resource_prefix}-build"
   description   = "Build and deploy Go application to ECS"
@@ -257,7 +249,6 @@ resource "aws_iam_role_policy_attachment" "task_ddb" {
   policy_arn = aws_iam_policy.ddb_policy.arn
 }
 
-# Task Definition
 resource "aws_ecs_task_definition" "task" {
   family                   = "${local.resource_prefix}-task"
   network_mode             = "awsvpc"
@@ -297,7 +288,6 @@ resource "aws_ecs_task_definition" "task" {
   tags = local.common_tags
 }
 
-# ECS Service
 resource "aws_ecs_service" "svc" {
   name            = "${local.resource_prefix}-svc"
   cluster         = aws_ecs_cluster.this.id

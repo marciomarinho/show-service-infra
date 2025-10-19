@@ -3,7 +3,6 @@ resource "aws_apigatewayv2_api" "http_api" {
   protocol_type = "HTTP"
 }
 
-# JWT Authorizer using Cognito
 resource "aws_apigatewayv2_authorizer" "jwt" {
   api_id           = aws_apigatewayv2_api.http_api.id
   authorizer_type  = "JWT"
@@ -11,7 +10,6 @@ resource "aws_apigatewayv2_authorizer" "jwt" {
   name             = "${local.name}-jwt"
 
   jwt_configuration {
-    # Use the User Pool issuer (not Hosted UI domain)
     issuer   = "https://cognito-idp.${var.region}.amazonaws.com/${aws_cognito_user_pool.pool.id}"
     audience = [aws_cognito_user_pool_client.app_client.id]
   }
@@ -23,7 +21,6 @@ resource "aws_apigatewayv2_authorizer" "jwt" {
   ]
 }
 
-# VPC Link for API Gateway to access private ALB
 resource "aws_apigatewayv2_vpc_link" "alb_link" {
   name               = "${local.name}-vpc-link"
   security_group_ids = [aws_security_group.alb_sg.id]
@@ -32,7 +29,6 @@ resource "aws_apigatewayv2_vpc_link" "alb_link" {
   tags = local.common_tags
 }
 
-# Integration to ALB for /shows
 resource "aws_apigatewayv2_integration" "alb_integ" {
   api_id                 = aws_apigatewayv2_api.http_api.id
   integration_type       = "HTTP_PROXY"
@@ -69,7 +65,6 @@ resource "aws_apigatewayv2_route" "health_check" {
   api_id    = aws_apigatewayv2_api.http_api.id
   route_key = "GET /v1/health"
   target    = "integrations/${aws_apigatewayv2_integration.alb_integ.id}"
-  # No authorization_type means no authentication required
   depends_on = [
     aws_apigatewayv2_vpc_link.alb_link
   ]
@@ -83,7 +78,6 @@ resource "aws_apigatewayv2_route" "catch_all" {
   authorizer_id      = aws_apigatewayv2_authorizer.jwt.id
 }
 
-# Public passthrough to Cognito token endpoint
 resource "aws_apigatewayv2_integration" "cognito_token_integ" {
   api_id                 = aws_apigatewayv2_api.http_api.id
   integration_type       = "HTTP_PROXY"
@@ -96,7 +90,6 @@ resource "aws_apigatewayv2_route" "token_route" {
   api_id    = aws_apigatewayv2_api.http_api.id
   route_key = "POST /oauth/token"
   target    = "integrations/${aws_apigatewayv2_integration.cognito_token_integ.id}"
-  # No authorizer – callers pass Basic Auth (client_id:client_secret) themselves
 }
 
 resource "aws_apigatewayv2_stage" "default" {

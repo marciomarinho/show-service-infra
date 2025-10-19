@@ -56,7 +56,6 @@ variable "memory" {
   description = "Memory for ECS task in MB"
 }
 
-# Environment-specific configurations
 locals {
   environment_configs = {
     dev = {
@@ -85,7 +84,6 @@ locals {
   current_env_config = local.environment_configs[var.env]
 }
 
-# Override variables with environment-specific defaults
 variable "desired_count_override" {
   type        = number
   default     = null
@@ -122,7 +120,6 @@ variable "cognito_domain_prefix" {
   description = "Cognito domain prefix (auto-generated if empty)"
 }
 
-# Computed values that use environment configs
 locals {
   final_desired_count   = var.desired_count_override != null ? var.desired_count_override : local.current_env_config.desired_count
   final_cpu            = var.cpu_override != null ? var.cpu_override : local.current_env_config.cpu

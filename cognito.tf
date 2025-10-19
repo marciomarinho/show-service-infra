@@ -1,4 +1,3 @@
-# Cognito User Pool for authentication
 resource "aws_cognito_user_pool" "pool" {
   name = "${local.resource_prefix}-pool"
 
@@ -13,7 +12,6 @@ resource "aws_cognito_user_pool" "pool" {
   tags = local.common_tags
 }
 
-# Custom API (resource server) for machine-to-machine scopes
 resource "aws_cognito_resource_server" "shows_api" {
   user_pool_id = aws_cognito_user_pool.pool.id
   identifier   = "https://show-service-dev.api"
