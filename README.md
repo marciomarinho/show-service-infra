@@ -4,7 +4,7 @@ A complete AWS serverless architecture for a show/content management service wit
 
 ## Architecture Overview
 
-<img src="./architecture.png" alt="Architecture">
+<img src="./docs/screenshots/architecture.png" alt="Architecture">
 
 ### Component Relationships
 
@@ -51,11 +51,11 @@ A complete AWS serverless architecture for a show/content management service wit
 
 ### Sequence Diagram: Get Bearer Token
 
-<img src="./screenshots/get_bearer_token.png" alt="Authentication Flow - get bearer tokien">
+<img src="./docs/screenshots/get_bearer_token.png" alt="Authentication Flow - get bearer tokien">
 
 ### Sequence Diagram: Authenticated API Request
 
-<img src="./screenshots/post_show_and_get_show.png" alt="Authenticated API Request">
+<img src="./docs/screenshots/post_show_and_get_show.png" alt="Authenticated API Request">
 
 ## API Usage Examples
 
@@ -259,46 +259,46 @@ aws logs describe-log-groups --log-group-name-prefix "/aws/apigateway"
 
 ### Cognito
 
-<img src="./screenshots/cognito.png" alt="Cognito">
+<img src="./docs/screenshots/cognito.png" alt="Cognito">
 
 ### CodeBuild
 
-<img src="./screenshots/code_build.png" alt="CodeBuild">
+<img src="./docs/screenshots/code_build.png" alt="CodeBuild">
 
 ### API Gateway
 
-<img src="./screenshots/api_gateway1.png" alt="APIGateway">
-<img src="./screenshots/api_gateway2.png" alt="APIGateway">
-<img src="./screenshots/api_gateway3.png" alt="APIGateway">
+<img src="./docs/screenshots/api_gateway1.png" alt="APIGateway">
+<img src="./docs/screenshots/api_gateway2.png" alt="APIGateway">
+<img src="./docs/screenshots/api_gateway3.png" alt="APIGateway">
 
 ### VPC Endpoint (Connecting API Gateway to ALB)
 
-<img src="./screenshots/vpc_endpoint.png" alt="VPC Endpoint">
+<img src="./docs/screenshots/vpc_endpoint.png" alt="VPC Endpoint">
 
 ### ALB
 
-<img src="./screenshots/alb.png" alt="ALB">
+<img src="./docs/screenshots/alb.png" alt="ALB">
 
 ### Target Group
 
-<img src="./screenshots/target_group.png" alt="Target Group">
+<img src="./docs/screenshots/target_group.png" alt="Target Group">
 
 ### ECS Cluster
 
-<img src="./screenshots/ecs_cluster.png" alt="ECS Cluster">
+<img src="./docs/screenshots/ecs_cluster.png" alt="ECS Cluster">
 
 ### ECS Service
 
-<img src="./screenshots/ecs_service.png" alt="ECS Service">
+<img src="./docs/screenshots/ecs_service.png" alt="ECS Service">
 
 ### ECS Task
 
-<img src="./screenshots/ecs_task1.png" alt="ECS Task">
-<img src="./screenshots/ecs_task2.png" alt="ECS Task">
+<img src="./docs/screenshots/ecs_task1.png" alt="ECS Task">
+<img src="./docs/screenshots/ecs_task2.png" alt="ECS Task">
 
 ### DynamoDB
 
-<img src="./screenshots/dynamodb.png" alt="DynamoDB">
+<img src="./docs/screenshots/dynamodb.png" alt="DynamoDB">
 
 ## Additional Resources
 
