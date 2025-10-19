@@ -73,8 +73,17 @@ TOKEN=$(curl -s -X POST "https://your-apigw-url/oauth/token" \
 ### API Requests
 
 ```bash
+# Health check (no authentication required)
+curl "https://your-apigw-url/v1/health"
+
 # Get all shows
-curl -H "Authorization: Bearer $TOKEN" "https://your-apigw-url/shows"
+curl -H "Authorization: Bearer $TOKEN" "https://your-apigw-url/v1/shows"
+
+# Create a new show (requires shows.write scope)
+curl -X POST "https://your-apigw-url/v1/shows" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Sample Show","slug":"sample-show","drmKey":1,"episodeCount":10}'
 
 # Expected: {"response": []} (empty array initially)
 ```
@@ -113,8 +122,8 @@ curl http://localhost:8080/shows
 ## Infrastructure Components
 
 ### API Gateway (HTTP API)
-- **Routes**: `GET /shows`, `POST /oauth/token`
-- **Authentication**: JWT authorizer using Cognito
+- **Routes**: `GET /v1/health`, `GET /v1/shows`, `POST /v1/shows`, `POST /oauth/token`
+- **Authentication**: JWT authorizer using Cognito (except health check)
 - **CORS**: Configured for web application access
 
 ### Cognito User Pool
@@ -179,7 +188,7 @@ terraform apply -var-file=terraform.prod.tfvars -auto-approve
 
 - **CloudWatch Logs**: `/ecs/show-service-{env}` log groups
 - **Application Logs**: Structured JSON logging
-- **Health Checks**: `/health` endpoint for ALB
+- **Health Checks**: `GET /v1/health` endpoint (public) and ALB health check
 - **Error Tracking**: Detailed error responses with proper HTTP codes
 
 ## CI/CD Pipeline

@@ -43,12 +43,33 @@ resource "aws_apigatewayv2_integration" "alb_integ" {
   connection_id          = aws_apigatewayv2_vpc_link.alb_link.id
 }
 
-resource "aws_apigatewayv2_route" "get_shows" {
+resource "aws_apigatewayv2_route" "post_shows" {
   api_id             = aws_apigatewayv2_api.http_api.id
-  route_key          = "GET /shows"
+  route_key          = "POST /v1/shows"
   target             = "integrations/${aws_apigatewayv2_integration.alb_integ.id}"
   authorization_type = "JWT"
   authorizer_id      = aws_apigatewayv2_authorizer.jwt.id
+  depends_on = [
+    aws_apigatewayv2_vpc_link.alb_link
+  ]
+}
+
+resource "aws_apigatewayv2_route" "get_shows" {
+  api_id             = aws_apigatewayv2_api.http_api.id
+  route_key          = "GET /v1/shows"
+  target             = "integrations/${aws_apigatewayv2_integration.alb_integ.id}"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.jwt.id
+  depends_on = [
+    aws_apigatewayv2_vpc_link.alb_link
+  ]
+}
+
+resource "aws_apigatewayv2_route" "health_check" {
+  api_id    = aws_apigatewayv2_api.http_api.id
+  route_key = "GET /v1/health"
+  target    = "integrations/${aws_apigatewayv2_integration.alb_integ.id}"
+  # No authorization_type means no authentication required
   depends_on = [
     aws_apigatewayv2_vpc_link.alb_link
   ]
